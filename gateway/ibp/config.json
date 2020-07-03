@@ -1,0 +1,7 @@
+{
+   "connection_profile_filename":"../../gateway/ibp/fabric_connection.json",
+    "channel_name":"channel1",
+    "smart_contract_name":"gensupplychainnet",
+    "wallet":"../../gateway/ibp/gen_ibp_wallet",
+    "peerForEventsSubscription": "peer0.org1.example.com:7051"
+}
