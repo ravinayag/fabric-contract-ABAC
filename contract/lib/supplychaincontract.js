@@ -15,8 +15,8 @@ const OrderStates = require('./order.js').orderStates;
 const EVENT_TYPE = "bcpocevent";
 
 //  Error codes
-const DUPLICATE_ORDER_ID = 101;
-const ORDER_ID_NOT_FOUND = 102;
+const DUPLICATE_ORDER_ID = E101;
+const ORDER_ID_NOT_FOUND = E102;
 
 /**
  * A custom context provides easy access to list of all products
@@ -39,7 +39,7 @@ class SupplychainContract extends Contract {
 
     /**
      * Define a custom context for product
-    */
+     */
     createContext() {
         return new SupplychainContext();
     }
@@ -65,15 +65,16 @@ class SupplychainContract extends Contract {
      * @param {Integer} quantity
      * @param {String} producerId
      * @param {String} retailerId
+     * @param {Integer} barcode
 
-     * Usage: submitTransaction ('orderProduct', 'Order001', 'mango', 100.00, 100, 'farm1', 'walmart')
+     * Usage: submitTransaction ('orderProduct', 'Order001', 'mango', 100.00, 100, 'farm1', 'walmart', 9100022233)
      * Usage: ["Order100", "mango", "10.00", "102", "farm1", "walmart"]
     */
     async orderProduct(ctx, args) {
 
         // Access Control: This transaction should only be invoked by a Producer or Retailer
         let userType = await this.getCurrentUserType(ctx);
-        
+
 
         if ((userType != "admin") && // admin only has access as a precaution.
             (userType != "producer") &&
@@ -84,7 +85,7 @@ class SupplychainContract extends Contract {
         const orderId = order_details.orderId;
 
         console.log("incoming asset fields: " + JSON.stringify(order_details));
-        
+
         // Check if an order already exists with id=orderId
         var orderAsBytes = await ctx.stub.getState(orderId);
         if (orderAsBytes && orderAsBytes.length > 0) {
@@ -101,21 +102,20 @@ class SupplychainContract extends Contract {
         order.modifiedBy = await this.getCurrentUserId(ctx);
         order.currentOrderState = OrderStates.ORDER_CREATED;
         order.trackingInfo = '';
+        order.barcode = order_details.barcode.toString();
 
         // Update ledger
         await ctx.stub.putState(orderId, order.toBuffer());
 
         // Define and set event
         const event_obj = order;
-        event_obj.event_type = "createOrder";   //  add the field "event_type" for the event to be processed
- 
+        event_obj.event_type = "createOrder"; //  add the field "event_type" for the event to be processed
+
         try {
             await ctx.stub.setEvent(EVENT_TYPE, event_obj.toBuffer());
-        }
-        catch (error) {
+        } catch (error) {
             console.log("Error in sending event");
-        }
-        finally {
+        } finally {
             console.log("Attempted to send event = ", order);
         }
 
@@ -124,12 +124,12 @@ class SupplychainContract extends Contract {
     }
 
     /**
-      * receiveOrder
-      * To be called by a Producer when an order is received (and he begins to process the order)
-      *
-      * @param {Context} ctx the transaction context
-      * @param {String}  orderId
-      * Usage:  receiveOrder ('Order001')
+     * receiveOrder
+     * To be called by a Producer when an order is received (and he begins to process the order)
+     *
+     * @param {Context} ctx the transaction context
+     * @param {String}  orderId
+     * Usage:  receiveOrder ('Order001')
      */
     async receiveOrder(ctx, orderId) {
         console.info('============= receiveOrder ===========');
@@ -175,7 +175,7 @@ class SupplychainContract extends Contract {
      * @param {String}  newShipperId
      *
      * Usage:  assignShipper ('Order001', 'UPS')
-    */
+     */
     async assignShipper(ctx, orderId, newShipperId) {
         console.info('============= assignShipper ===========');
 
@@ -198,7 +198,7 @@ class SupplychainContract extends Contract {
 
         // Access Control: This transaction should only be invoked by designated Producer
         let userId = await this.getCurrentUserId(ctx);
- 
+
         if ((userId != "admin") && // admin only has access as a precaution.
             (userId != order.producerId))
             throw new Error(`${userId} does not have access to assign a shipper to order ${orderId}`);
@@ -224,7 +224,7 @@ class SupplychainContract extends Contract {
      * @param {String}  orderId
      * @param {String}  trackingInfo
      * Usage:  createShipment ('Order001', '34590279RKE9D339')
-    */
+     */
     async createShipment(ctx, orderId, newTrackingInfo) {
         console.info('============= createShipment ===========');
 
@@ -250,7 +250,7 @@ class SupplychainContract extends Contract {
 
         // Access Control: This transaction should only be invoked by a designated Shipper
         let userId = await this.getCurrentUserId(ctx);
- 
+
         if ((userId != "admin") && // admin only has access as a precaution.
             (userId != order.shipperId))
             throw new Error(`${userId} does not have access to create a shipment for order ${orderId}`);
@@ -276,7 +276,7 @@ class SupplychainContract extends Contract {
      * @param {String}  orderId
      *
      * Usage:  transportShipment ('Order001')
-    */
+     */
     async transportShipment(ctx, orderId) {
         console.info('============= transportShipment ===========');
 
@@ -295,9 +295,10 @@ class SupplychainContract extends Contract {
 
         // Access Control: This transaction should only be invoked by designated designated Shipper
         let userId = await this.getCurrentUserId(ctx);
- 
+
         if ((userId != "admin") // admin only has access as a precaution.
-            && (userId != order.shipperId)) // This transaction should only be invoked by
+            &&
+            (userId != order.shipperId)) // This transaction should only be invoked by
             throw new Error(`${userId} does not have access to transport shipment for order ${orderId}`);
 
         // Change currentOrderState to SHIPMENT_IN_TRANSIT;
@@ -319,7 +320,7 @@ class SupplychainContract extends Contract {
      * @param {Context} ctx the transaction context
      * @param {String}  orderId
      * Usage:  receiveShipment ('Order001')
-    */
+     */
     async receiveShipment(ctx, orderId) {
         console.info('============= receiveShipment ===========');
 
@@ -338,9 +339,10 @@ class SupplychainContract extends Contract {
 
         // Access Control: This transaction should only be invoked by designated originating Retailer
         let userId = await this.getCurrentUserId(ctx);
- 
+
         if ((userId != "admin") // admin only has access as a precaution.
-            && (userId != order.retailerId)) // This transaction should only be invoked by
+            &&
+            (userId != order.retailerId)) // This transaction should only be invoked by
             throw new Error(`${userId} does not have access to receive shipment for order ${orderId}`);
 
         // Change currentOrderState to SHIPMENT_RECEIVED;
@@ -362,7 +364,7 @@ class SupplychainContract extends Contract {
      * @param {String}  orderId
      * Usage:  queryOrder ('Order001')
      *
-    */
+     */
     async queryOrder(ctx, orderId) {
         console.info('============= queryOrder ===========');
 
@@ -389,11 +391,14 @@ class SupplychainContract extends Contract {
 
         var order = Order.deserialize(orderAsBytes);
         let userId = await this.getCurrentUserId(ctx);
- 
+
         if ((userId != "admin") // admin only has access as a precaution.
-            && (userId != order.producerId) // This transaction should only be invoked by
-            && (userId != order.retailerId) //     Producer, Retailer, Shipper associated with order
-            && (userId != order.shipperId))
+            &&
+            (userId != order.producerId) // This transaction should only be invoked by
+            &&
+            (userId != order.retailerId) //     Producer, Retailer, Shipper associated with order
+            &&
+            (userId != order.shipperId))
             throw new Error(`${userId} does not have access to the details of order ${orderId}`);
 
         // Return a serialized order to caller of smart contract
@@ -411,7 +416,7 @@ class SupplychainContract extends Contract {
      * @param {Context} ctx the transaction context
      * @param {String}  args
      * Usage:  queryAllOrders ()
-    */
+     */
     async queryAllOrders(ctx) {
         console.info('============= getOrderHistory ===========');
 
@@ -425,42 +430,48 @@ class SupplychainContract extends Contract {
         switch (userType) {
 
             case "admin":
-            case "regulator": {
-                queryString = {
-                    "selector": {}  //  no filter;  return all orders
-                }
-                break;
-            }
-            case "producer": {
-                queryString = {
-                    "selector": {
-                        "producerId": userId
+            case "regulator":
+                {
+                    queryString = {
+                        "selector": {} //  no filter;  return all orders
                     }
+                    break;
                 }
-                break;
-            }
-            case "shipper": {
-                queryString = {
-                    "selector": {
-                        "shipperId": userId
+            case "producer":
+                {
+                    queryString = {
+                        "selector": {
+                            "producerId": userId
+                        }
                     }
+                    break;
                 }
-                break;
-            }
-            case "retailer": {
-                queryString = {
-                    "selector": {
-                        "retailerId": userId
+            case "shipper":
+                {
+                    queryString = {
+                        "selector": {
+                            "shipperId": userId
+                        }
                     }
+                    break;
                 }
-                break;
-            }
-            case "customer": {
-                throw new Error(`${userId} does not have access to this transaction`);
-            }
-            default: {
-                return [];
-            }
+            case "retailer":
+                {
+                    queryString = {
+                        "selector": {
+                            "retailerId": userId
+                        }
+                    }
+                    break;
+                }
+            case "customer":
+                {
+                    throw new Error(`${userId} does not have access to this transaction`);
+                }
+            default:
+                {
+                    return [];
+                }
         }
 
         console.log("In queryAllOrders: queryString = ");
@@ -526,12 +537,17 @@ class SupplychainContract extends Contract {
         let userType = await this.getCurrentUserType(ctx);
 
         // Access Control:
-        if ((userId != "admin")             // admin only has access as a precaution.
-            && (userType != "customer")      // Customers can see any order if it's in the correct state
-            && (userType != "regulator")     // Regulators can see any order
-            && (userId != order.producerId) // Only producer, retailer, shipper associated
-            && (userId != order.retailerId) //      with this order can see its details
-            && (userId != order.shipperId))
+        if ((userId != "admin") // admin only has access as a precaution.
+            &&
+            (userType != "customer") // Customers can see any order if it's in the correct state
+            &&
+            (userType != "regulator") // Regulators can see any order
+            &&
+            (userId != order.producerId) // Only producer, retailer, shipper associated
+            &&
+            (userId != order.retailerId) //      with this order can see its details
+            &&
+            (userId != order.shipperId))
             throw new Error(`${userId} does not have access to order ${orderId}`);
 
         // Customer can only view order history if order has completed cycle
@@ -554,7 +570,7 @@ class SupplychainContract extends Contract {
                 // Convert Timestamp date
                 var d = new Date(0);
                 d.setUTCSeconds(history.value.timestamp.seconds.low);
-                jsonRes.Timestamp = d.toLocaleString("en-US", { timeZone: "America/Chicago" }) + " CST";
+                jsonRes.Timestamp = d.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }) + " IST";
                 // Store Order details
                 try {
                     jsonRes.Value = JSON.parse(history.value.value.toString('utf8'));
@@ -604,19 +620,21 @@ class SupplychainContract extends Contract {
         let userId = await this.getCurrentUserId(ctx);
 
         if ((userId != "admin") // admin only has access as a precaution.
-            && (userId != order.retailerId) // This transaction should only be invoked by Producer or Retailer of order
-            && (userId != order.producerId))
+            &&
+            (userId != order.retailerId) // This transaction should only be invoked by Producer or Retailer of order
+            &&
+            (userId != order.producerId))
             throw new Error(`${userId} does not have access to delete order ${orderId}`);
 
         await ctx.stub.deleteState(orderId); //remove the order from chaincode state
     }
 
     /**
-      * getCurrentUserId
-      * To be called by application to get the type for a user who is logged in
-      *
-      * @param {Context} ctx the transaction context
-      * Usage:  getCurrentUserId ()
+     * getCurrentUserId
+     * To be called by application to get the type for a user who is logged in
+     *
+     * @param {Context} ctx the transaction context
+     * Usage:  getCurrentUserId ()
      */
     async getCurrentUserId(ctx) {
 
@@ -629,11 +647,11 @@ class SupplychainContract extends Contract {
     }
 
     /**
-      * getCurrentUserType
-      * To be called by application to get the type for a user who is logged in
-      *
-      * @param {Context} ctx the transaction context
-      * Usage:  getCurrentUserType ()
+     * getCurrentUserType
+     * To be called by application to get the type for a user who is logged in
+     *
+     * @param {Context} ctx the transaction context
+     * Usage:  getCurrentUserType ()
      */
     async getCurrentUserType(ctx) {
 
@@ -646,6 +664,6 @@ class SupplychainContract extends Contract {
         }
         return ctx.clientIdentity.getAttributeValue("usertype");
     }
-}  //  Class SupplychainContract
+} //  Class SupplychainContract
 
 module.exports = SupplychainContract;

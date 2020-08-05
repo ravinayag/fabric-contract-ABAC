@@ -1,8 +1,8 @@
 /*
-* Copyright IBM Corp All Rights Reserved
-*
-* SPDX-License-Identifier: Apache-2.0
-*/
+ * Copyright IBM Corp All Rights Reserved
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 'use strict';
 const express = require('express');
 const utils = require('./utils.js');
@@ -26,7 +26,7 @@ const ORDER_NOT_FOUND = 2000;
 async function getUsernamePassword(request) {
     // check for basic auth header
     if (!request.headers.authorization || request.headers.authorization.indexOf('Basic ') === -1) {
-        return new Promise().reject('Missing Authorization Header');  //  status 401
+        return new Promise().reject('Missing Authorization Header'); //  status 401
     }
 
     // get auth credentials
@@ -43,7 +43,7 @@ async function getUsernamePassword(request) {
     //  to pick up certificate from the local wallet.
 
     if (!username || !password) {
-        return new Promise().reject('Invalid Authentication Credentials');  //  status 401
+        return new Promise().reject('Invalid Authentication Credentials'); //  status 401
     }
 
     // attach username and password to request object
@@ -73,13 +73,12 @@ async function submitTx(request, txName, ...args) {
         }, error => {
             return Promise.reject(error);
         });
-    }
-    catch (error) {
+    } catch (error) {
         return Promise.reject(error);
     }
 }
 
-supplychainRouter.route('/orders').get(function (request, response) {
+supplychainRouter.route('/orders').get(function(request, response) {
     submitTx(request, 'queryAllOrders', '')
         .then((queryOrderResponse) => {
             //  response is already a string;  not a buffer
@@ -91,14 +90,14 @@ supplychainRouter.route('/orders').get(function (request, response) {
             response.send(utils.prepareErrorResponse(error, STATUS_SERVER_ERROR,
                 "There was a problem getting the list of orders."));
         });
-});  //  process route orders/
+}); //  process route orders/
 
-supplychainRouter.route('/orders/:id').get(function (request, response) {
+supplychainRouter.route('/orders/:id').get(function(request, response) {
     submitTx(request, 'queryOrder', request.params.id)
         .then((queryOrderResponse) => {
             // process response
             let order = Order.fromBuffer(queryOrderResponse);
-            console.log(`order ${order.orderId} : price = ${order.price}, quantity = ${order.quantity}, producer = ${order.producerId}, consumer = ${order.retailerId}, trackingInfo = ${order.trackingInfo}, state = ${order.currentOrderState}`);
+            console.log(`order ${order.orderId} : price = ${order.price}, quantity = ${order.quantity}, producer = ${order.producerId}, consumer = ${order.retailerId}, trackingInfo = ${order.trackingInfo}, state = ${order.currentOrderState}, barcode = ${order.barcode}`);
             response.status(STATUS_SUCCESS);
             response.send(order);
         }, (error) => {
@@ -109,13 +108,13 @@ supplychainRouter.route('/orders/:id').get(function (request, response) {
         });
 });
 
-supplychainRouter.route('/orders').post(function (request, response) {
+supplychainRouter.route('/orders').post(function(request, response) {
     submitTx(request, 'orderProduct', JSON.stringify(request.body))
         .then((result) => {
             // process response
             console.log('\nProcess orderProduct transaction.');
             let order = Order.fromBuffer(result);
-            console.log(`order ${order.orderId} : price = ${order.price}, quantity = ${order.quantity}, producer = ${order.producerId}, consumer = ${order.retailerId}, trackingInfo = ${order.trackingInfo}, state = ${order.currentOrderState}`);
+            console.log(`order ${order.orderId} : price = ${order.price}, quantity = ${order.quantity}, producer = ${order.producerId}, consumer = ${order.retailerId}, trackingInfo = ${order.trackingInfo}, state = ${order.currentOrderState}, barcode = ${order.barcode}`);
             response.status(STATUS_SUCCESS);
             response.send(order);
         }, (error) => {
@@ -126,7 +125,7 @@ supplychainRouter.route('/orders').post(function (request, response) {
 });
 
 
-supplychainRouter.route('/order-history/:id').get(function (request, response) {
+supplychainRouter.route('/order-history/:id').get(function(request, response) {
     submitTx(request, 'getOrderHistory', request.params.id)
         .then((orderHistoryResponse) => {
             console.log('\n>>>Process getOrderHistory response', orderHistoryResponse);
@@ -142,7 +141,7 @@ supplychainRouter.route('/order-history/:id').get(function (request, response) {
 });
 
 // Change status to ORDER_RECEIVED
-supplychainRouter.route('/receive-order/:id').put(function (request, response) {
+supplychainRouter.route('/receive-order/:id').put(function(request, response) {
     submitTx(request, 'receiveOrder', request.params.id)
         .then((receiveOrderResponse) => {
             // process response
@@ -157,15 +156,15 @@ supplychainRouter.route('/receive-order/:id').put(function (request, response) {
                 "There was a problem in receiving order, ", request.params.id));
         });
 
-});  //  process route /
+}); //  process route /
 
 // Change status to ORDER_RECEIVED, add name of a shipper to order.
-supplychainRouter.route('/assign-shipper/:id').put(function (request, response) {
+supplychainRouter.route('/assign-shipper/:id').put(function(request, response) {
     submitTx(request, 'assignShipper', request.params.id, request.query.shipperid)
         .then((assignShipperResponse) => {
             console.log('Process AssignShipper transaction.');
             let order = Order.fromBuffer(assignShipperResponse);
-            console.log(`order ${order.orderId} : shipper = ${order.shipperId}, state = ${order.currentOrderState}`);
+            console.log(`order ${order.orderId} : shipper = ${order.shipperId}, state = ${order.currentOrderState}, barcode = ${order.barcode}`);
             response.status(STATUS_SUCCESS);
             response.send(order);
         }, (error) => {
@@ -173,31 +172,31 @@ supplychainRouter.route('/assign-shipper/:id').put(function (request, response) 
             response.send(utils.prepareErrorResponse(error, STATUS_SERVER_ERROR,
                 "There was a problem in assigning shipper for order, ", request.params.id));
         });
-});  //  process route /
+}); //  process route /
 
 // This changes the status on the order, and adds a ship id
-supplychainRouter.route('/create-shipment-for-order/:id').put(function (request, response) {
-    submitTx (request, 'createShipment', request.params.id, utils.getRandomNum())
-      .then((createShipmentResponse) => {
-          console.log('Process CreateShipment transaction.');
-          let order = Order.fromBuffer(createShipmentResponse);
-          console.log(`order ${order.orderId} : trackingInfo = ${order.trackingInfo}, state = ${order.currentOrderState}`);
-          response.status(STATUS_SUCCESS);
-          response.send(order);
-      }, (error) => {
-          response.status(STATUS_SERVER_ERROR);
-          response.send(utils.prepareErrorResponse(error, STATUS_SERVER_ERROR,
-              "There was a problem in creating shipment for order," + request.params.id));
-      });
-});  //  process route /
+supplychainRouter.route('/create-shipment-for-order/:id').put(function(request, response) {
+    submitTx(request, 'createShipment', request.params.id, utils.getRandomNum())
+        .then((createShipmentResponse) => {
+            console.log('Process CreateShipment transaction.');
+            let order = Order.fromBuffer(createShipmentResponse);
+            console.log(`order ${order.orderId} : trackingInfo = ${order.trackingInfo}, state = ${order.currentOrderState}, barcode = ${order.barcode}`);
+            response.status(STATUS_SUCCESS);
+            response.send(order);
+        }, (error) => {
+            response.status(STATUS_SERVER_ERROR);
+            response.send(utils.prepareErrorResponse(error, STATUS_SERVER_ERROR,
+                "There was a problem in creating shipment for order," + request.params.id));
+        });
+}); //  process route /
 
 // This changes the status on the order
-supplychainRouter.route('/transport-shipment/:id').put(function (request, response) {
+supplychainRouter.route('/transport-shipment/:id').put(function(request, response) {
     submitTx(request, 'transportShipment', request.params.id)
         .then((transportShipmentResponse) => {
             console.log('Process TransportShipment transaction.');
             let order = Order.fromBuffer(transportShipmentResponse);
-            console.log(`order ${order.orderId} : state = ${order.currentOrderState}`);
+            console.log(`order ${order.orderId} : state = ${order.currentOrderState}, barcode = ${order.barcode}`);
             response.status(STATUS_SUCCESS);
             response.send(order);
         }, (error) => {
@@ -205,10 +204,10 @@ supplychainRouter.route('/transport-shipment/:id').put(function (request, respon
             response.send(utils.prepareErrorResponse(error, STATUS_SERVER_ERROR,
                 "There was a problem in initiating shipment for order," + request.params.id));
         });
-});  //  process route /
+}); //  process route /
 
 // This changes the status on the order
-supplychainRouter.route('/receive-shipment/:id').put(function (request, response) {
+supplychainRouter.route('/receive-shipment/:id').put(function(request, response) {
     submitTx(request, 'receiveShipment', request.params.id)
         .then((receiveShipmentResponse) => {
             // process response
@@ -227,7 +226,7 @@ supplychainRouter.route('/receive-shipment/:id').put(function (request, response
 // Delete designated order with id
 //  app.delete('/api/orders/:id', (request, response) => {
 //  contract.submitTransaction('deleteOrder', request.params.id)
-supplychainRouter.route('/orders/:id').delete(function (request, response) {
+supplychainRouter.route('/orders/:id').delete(function(request, response) {
     submitTx(request, 'deleteOrder', request.params.id)
         .then((deleteOrderResponse) => {
             // process response
@@ -254,7 +253,7 @@ supplychainRouter.route('/orders/:id').delete(function (request, response) {
 //  Output:     pwd; If password was "", a generated password is returned in response
 //  Usage 1:    "smith", "smithpw", "producer"
 //  Usage 2:    "smith", "",        "producer"
-supplychainRouter.route('/register-user').post(function (request, response) {
+supplychainRouter.route('/register-user').post(function(request, response) {
     try {
         let userId = request.body.userid;
         let userPwd = request.body.password;
@@ -270,15 +269,15 @@ supplychainRouter.route('/register-user').post(function (request, response) {
                 //  register-user can only be called by a user with admin privileges.
 
                 utils.registerUser(userId, userPwd, userType, request.username).
-                    then((result) => {
-                        response.status(STATUS_SUCCESS);
-                        response.send(result);
-                    }, (error) => {
-                        response.status(STATUS_CLIENT_ERROR);
-                        response.send(utils.prepareErrorResponse(error, STATUS_CLIENT_ERROR,
-                            "User, " + userId + " could not be registered. "
-                            + "Verify if calling identity has admin privileges."));
-                    });
+                then((result) => {
+                    response.status(STATUS_SUCCESS);
+                    response.send(result);
+                }, (error) => {
+                    response.status(STATUS_CLIENT_ERROR);
+                    response.send(utils.prepareErrorResponse(error, STATUS_CLIENT_ERROR,
+                        "User, " + userId + " could not be registered. " +
+                        "Verify if calling identity has admin privileges."));
+                });
             }, error => {
                 response.status(STATUS_CLIENT_ERROR);
                 response.send(utils.prepareErrorResponse(error, INVALID_HEADER,
@@ -289,7 +288,7 @@ supplychainRouter.route('/register-user').post(function (request, response) {
         response.send(utils.prepareErrorResponse(error, STATUS_SERVER_ERROR,
             "Internal server error; User, " + userId + " could not be registered."));
     }
-});  //  process route register-user
+}); //  process route register-user
 
 //  Purpose:    To enroll registered users with Fabric CA;
 //  A call to enrollUser to Fabric CA generates (and returns) certificates for the given (registered) user;
@@ -297,7 +296,7 @@ supplychainRouter.route('/register-user').post(function (request, response) {
 //  Input: { userid, password } in header and request.body.usertype
 //  Output:  Certificate on successful enrollment
 //  Usage:  "smith", "smithpw", "producer"
-supplychainRouter.route('/enroll-user/').post(function (request, response) {
+supplychainRouter.route('/enroll-user/').post(function(request, response) {
     let userType = request.body.usertype;
     //  retrieve username, password of the called from authorization header
     getUsernamePassword(request).then(request => {
@@ -314,7 +313,7 @@ supplychainRouter.route('/enroll-user/').post(function (request, response) {
         response.send(utils.prepareErrorResponse(error, INVALID_HEADER,
             "Invalid header;  User, " + request.username + " could not be enrolled."));
     });
-});  //  post('/api/enroll-user/', (request, response) )
+}); //  post('/api/enroll-user/', (request, response) )
 
 //  Purpose:    To check if user is enrolled with Fabric CA;
 //  Input:  request.params.id = { userid }
@@ -323,32 +322,32 @@ supplychainRouter.route('/enroll-user/').post(function (request, response) {
 /*
 app.get('/api/is-user-enrolled/:id', (request, response) => {
 */
-supplychainRouter.route('/is-user-enrolled/:id').get(function (request, response) {
-    //  only admin can call this api;  But this is not verified here
-    //  get admin username and pwd from request header
-    //
-    getUsernamePassword(request)
-        .then(request => {
-            let userId = request.params.id;
-            utils.isUserEnrolled(userId).then(result => {
-                response.status(STATUS_SUCCESS);
-                response.send(result);
-            }, error => {
+supplychainRouter.route('/is-user-enrolled/:id').get(function(request, response) {
+        //  only admin can call this api;  But this is not verified here
+        //  get admin username and pwd from request header
+        //
+        getUsernamePassword(request)
+            .then(request => {
+                let userId = request.params.id;
+                utils.isUserEnrolled(userId).then(result => {
+                    response.status(STATUS_SUCCESS);
+                    response.send(result);
+                }, error => {
+                    response.status(STATUS_CLIENT_ERROR);
+                    response.send(utils.prepareErrorResponse(error, STATUS_CLIENT_ERROR,
+                        "Error checking enrollment for user, " + request.params.id));
+                });
+            }, ((error) => {
                 response.status(STATUS_CLIENT_ERROR);
-                response.send(utils.prepareErrorResponse(error, STATUS_CLIENT_ERROR,
-                  "Error checking enrollment for user, " + request.params.id));
-            });
-        }, ((error) => {
-            response.status(STATUS_CLIENT_ERROR);
-            response.send(utils.prepareErrorResponse(error, INVALID_HEADER,
-                "Invalid header; Error checking enrollment for user, " + request.params.id));
-        }));
-})  //  end of is-user-enrolled
+                response.send(utils.prepareErrorResponse(error, INVALID_HEADER,
+                    "Invalid header; Error checking enrollment for user, " + request.params.id));
+            }));
+    }) //  end of is-user-enrolled
 
 //  Purpose: Get list of all users
 //  Output:  array of all registered users
 //  Usage:  ""
-supplychainRouter.route('/users').get(function (request, response) {
+supplychainRouter.route('/users').get(function(request, response) {
     getUsernamePassword(request)
         .then(request => {
             utils.getAllUsers(request.username).then((result) => {
@@ -356,7 +355,7 @@ supplychainRouter.route('/users').get(function (request, response) {
                 response.send(result);
             }, (error) => {
                 response.status(STATUS_SERVER_ERROR);
-                response.send(utils.prepareErrorResponse (error, STATUS_SERVER_ERROR,
+                response.send(utils.prepareErrorResponse(error, STATUS_SERVER_ERROR,
                     "Problem getting list of users."));
             });
         }, ((error) => {
@@ -366,7 +365,7 @@ supplychainRouter.route('/users').get(function (request, response) {
         }));
 });
 
-supplychainRouter.route('/users/:id').get(function (request, response) {
+supplychainRouter.route('/users/:id').get(function(request, response) {
     //  Get admin username and pwd from request header
     //  Only admin can call this api; this is not verified here;
     //  Possible future enhancement

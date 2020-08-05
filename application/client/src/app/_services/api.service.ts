@@ -26,7 +26,7 @@ export class ApiService {
     7: "ORDER_CLOSED"
   };
 
-  baseUrl = "http://192.168.92.136:3000";
+  baseUrl = "http://164.52.195.83:3000";
 
   constructor(private httpClient: HttpClient, private userService: UserService) {}
 

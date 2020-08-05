@@ -9,13 +9,19 @@ const State = require('../ledger-api/state.js');
 
 // Enumerate order state values
 const orderState = {
-    ORDER_CREATED: 1,       // Retailer
-    ORDER_RECEIVED: 2,      // Producer
-    SHIPMENT_ASSIGNED: 3,   // Producer
-    SHIPMENT_CREATED: 4,    // Shipper
+    ORDER_CREATED: 1, // Retailer
+    ORDER_RECEIVED: 2, // Producer
+    SHIPMENT_ASSIGNED: 3, // Producer
+    SHIPMENT_CREATED: 4, // Shipper
     SHIPMENT_IN_TRANSIT: 5, // Shipper
-    SHIPMENT_RECEIVED: 6,   // Retailer
-    ORDER_CLOSED: 7     // Not currently used
+    SHIPMENT_RECEIVED: 6, // Retailer
+    ORDER_CLOSED: 7, // Not currently used
+    ORDER_DATE: 8, //Retailer - Booker
+    ORDER_VALUE: 9, //Retailer - Booker
+    ORDER_BARCODE: 10 //Producer
+
+
+
 };
 
 /**
@@ -40,23 +46,25 @@ class Order extends State {
       {String} retailerId
       {Enumerated orderStates} currentOrderState
       {String} modifiedBy
+      {String} date
+      {Integer} barcode
     */
 
     /**
      * Basic getters and setters
-    */
-    getId() {
-        return this.orderId;
-    }
-/*  //  should never be called explicitly;
-    //  id is set at the time of constructor call.
-    setId(newId) {
-        this.id = newId;
-    }
-*/
-    /**
-     * Useful methods to encapsulate  Order states
      */
+    getId() {
+            return this.orderId;
+        }
+        /*  //  should never be called explicitly;
+            //  id is set at the time of constructor call.
+            setId(newId) {
+                this.id = newId;
+            }
+        */
+        /**
+         * Useful methods to encapsulate  Order states
+         */
     setStateToOrderCreated() {
         this.currentOrderState = orderState.ORDER_CREATED;
 
@@ -86,6 +94,17 @@ class Order extends State {
         this.currentOrderState = orderState.ORDER_CLOSED;
     }
 
+    setStateToOrderDate() {
+        this.currentOrderState = orderState.ORDER_DATE;
+    }
+
+    setStateToOrderValue() {
+        this.currentOrderState = orderState.ORDER_VALUE;
+    }
+
+    setStateToOrderBarcode() {
+        this.currentOrderState = orderState.ORDER_BARCODE;
+    }
     static fromBuffer(buffer) {
         return Order.deserialize(Buffer.from(JSON.parse(buffer)));
     }
@@ -106,7 +125,7 @@ class Order extends State {
      * Factory method to create a order object
      */
     static createInstance(orderId) {
-        return new Order({orderId});
+        return new Order({ orderId });
     }
 
     static getClass() {
