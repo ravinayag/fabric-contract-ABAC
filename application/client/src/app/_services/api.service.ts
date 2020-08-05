@@ -26,11 +26,7 @@ export class ApiService {
     7: "ORDER_CLOSED"
   };
 
-<<<<<<< HEAD
-  baseUrl = "http://192.168.92.136:3000";
-=======
   baseUrl = "http://localhost:3000";
->>>>>>> 44ee7afa1bcde84ed7ccf1dc6cffcd788432dfaf
 
   constructor(private httpClient: HttpClient, private userService: UserService) {}
 
