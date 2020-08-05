@@ -1,9 +1,9 @@
 <h3>Order Form</h3>
 <div style="display: table-cell; width: 100vw">
-  <div class="formstyle">
+    <div class="formstyle">
 
-    <form [formGroup]="messageForm" (ngSubmit)="onSubmit()">
-      <label style="text-align:left">
+        <form [formGroup]="messageForm" (ngSubmit)="onSubmit()">
+            <label style="text-align:left">
         Product ID:
         <input type="text" formControlName="productid">
         <div *ngIf="submitted && messageForm.controls.productid.errors" class="error">
@@ -11,7 +11,7 @@
         </div>
       </label>
 
-      <label style="text-align:left">
+            <label style="text-align:left">
         Price:
         <input type="text" formControlName="price">
         <div *ngIf="submitted && messageForm.controls.price.errors" class="error">
@@ -19,7 +19,7 @@
         </div>
       </label>
 
-      <label style="text-align:left">
+            <label style="text-align:left">
         Quantity:
         <input type="text" formControlName="quantity">
         <div *ngIf="submitted && messageForm.controls.quantity.errors" class="error">
@@ -27,7 +27,7 @@
         </div>
       </label>
 
-     <label style="text-align:left">
+            <label style="text-align:left">
         Producer ID:
         <select class="form-control" formControlName="producerid" id="producerid">
           <option *ngFor="let producer of producers; let i = index" [value]="producers[i].id">
@@ -36,12 +36,20 @@
         </select> 
      </label>
 
-      <input type="submit" style="width:100%" value="Create Order" class="form-button">
-
-    </form>
-    <div *ngIf="submitted" class="results">
-        <p *ngIf="success; else elseBlock">Order Created Successfully!</p>
-        <ng-template #elseBlock></ng-template>
+            <label style="text-align:left">
+      Barcode ID:
+      <input type="text" formControlName="barcode">
+      <div *ngIf="submitted && messageForm.controls.barcode.errors" class="error">
+        <div *ngIf="messageForm.controls.barcode.errors.required">Barcode is required</div>
       </div>
-  </div>
+    </label>
+
+            <input type="submit" style="width:100%" value="Create Order" class="form-button">
+
+        </form>
+        <div *ngIf="submitted" class="results">
+            <p *ngIf="success; else elseBlock">Order Created Successfully!</p>
+            <ng-template #elseBlock></ng-template>
+        </div>
+    </div>
 </div>
