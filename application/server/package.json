@@ -13,17 +13,28 @@
     "config": "^2.0.1",
     "cors": "^2.8.5",
     "express": "~4.16.0",
+<<<<<<< HEAD
     "fabric-ca-client": "~1.4.4",
     "fabric-client": "~1.4.4",
     "fabric-network": "~1.4.4",
+=======
+    "fabric-ca-client": "~1.4.0",
+    "fabric-client": "~1.4.0",
+    "fabric-network": "~1.4.0",
+>>>>>>> 44ee7afa1bcde84ed7ccf1dc6cffcd788432dfaf
     "http-errors": "~1.6.2",
     "ibm-cloud-env": "^0.2.6",
     "passport": "^0.4.0",
     "yamljs": "^0.3.0"
   },
   "engines": {
+<<<<<<< HEAD
     "node": "^8.11.x",
     "npm": "^5.6.x"
+=======
+    "node": "8.11.x",
+    "npm": "5.6.x"
+>>>>>>> 44ee7afa1bcde84ed7ccf1dc6cffcd788432dfaf
   },
   "devDependencies": {
     "bluebird": "3.5.4",

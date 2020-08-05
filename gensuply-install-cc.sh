@@ -42,12 +42,17 @@ docker exec cli peer chaincode instantiate -o orderer.example.com:7050 --tls tru
 #docker exec cli peer chaincode instantiate -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel $signpackge.out -n $chainname -v 1.0 -l node -c '{"Args":["init"]}'  -P "OR ('Org1MSP.member' , 'Org1MSP.peer')"
 
 
+<<<<<<< HEAD
 rm -rf /opt/ksbc/fcabac/gateway/local/gen_local_wallet 
+=======
+rm -rf /opt/bc/fcabac/gateway/local/gen_local_wallet 
+>>>>>>> 44ee7afa1bcde84ed7ccf1dc6cffcd788432dfaf
 
 echo " sleeping 15 secs"
 sleep 15 
 
 ####  for FCABAC Project only
+<<<<<<< HEAD
 export chainname1=ledgerapi
 
 ### Non sign package install
@@ -68,4 +73,22 @@ cd /opt/ksbc/fcabac
 #node enrollAdmin.js
 
 #sh start_8001.sh
+=======
+#export chainname1=ledgerapi
+
+### Non sign package install
+#docker exec cli peer chaincode package $chainname1.out -n $chainname1 -v 1.0 -p /opt/gopath/src/github.com/chaincode/fcabac/contract/ledger-api -l node  # -s -S -i "AND('OrgA.admin')"
+#docker exec cli peer chaincode install $chainname1.out -n $chainname1 -v 1.0 -l node
+
+
+#export chainname2=ordercontract
+
+### Non sign package install
+#docker exec cli peer chaincode package $chainname2.out -n $chainname2 -v 1.0 -p /opt/gopath/src/github.com/chaincode/fcabac/contract/lib/ -l node  # -s -S -i "AND('OrgA.admin')"
+#docker exec cli peer chaincode install $chainname2.out -n $chainname2 -v 1.0 -l node
+
+
+
+cd /opt/bc/fcabac
+>>>>>>> 44ee7afa1bcde84ed7ccf1dc6cffcd788432dfaf
 
