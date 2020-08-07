@@ -21,7 +21,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 export class OrdersTableComponent implements OnInit {
   orders: MatTableDataSource<Order[]>;
   currentUser: any;
-  columnsToDisplay = ['orderId', 'productId', 'price', 'quantity', 'producerId', 'retailerId', 'status', 'trackingInfo'];
+  columnsToDisplay = ['orderId', 'productId', 'price', 'quantity', 'producerId', 'retailerId', 'status', 'trackingInfo', 'barcode'];
   expandedElement: Order | null;
 
   @Input('regulator') regulator: boolean;
@@ -171,6 +171,7 @@ export interface Order {
   retailerId: string;
   currentOrderState: number;
   trackingInfo: string;
+  barcode: number;
 }
 
 export interface ShipperDialogData {

@@ -19,6 +19,7 @@ export class OrderFormComponent implements OnInit {
   currentUser: any;
   producerId: String;
   producers: any[];
+  barcode: String;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -36,7 +37,8 @@ export class OrderFormComponent implements OnInit {
       productid: ['', Validators.required],
       price: ['', Validators.required],
       quantity: ['', Validators.required],
-      producerid: ['', Validators.required]
+      producerid: ['', Validators.required],
+      barcode: ['', Validators.required]
     });
   }
 
@@ -53,7 +55,8 @@ export class OrderFormComponent implements OnInit {
       price: this.messageForm.controls.price.value,
       quantity: this.messageForm.controls.quantity.value,
       producerId: this.messageForm.controls.producerid.value,
-      retailerId: this.currentUser.userid
+      retailerId: this.currentUser.userid,
+      barcode: this.messageForm.controls.barcode.value
     }
 
     this.api.orderProduct().subscribe(api => {
