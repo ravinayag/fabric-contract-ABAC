@@ -10,175 +10,92 @@ Connecting to event hub...peer0.org1.example.com
 Server listening on 3000
 
 >>>setUserContext...
-Connect to Fabric gateway with userid:GHFarm
->>>utils.submitTx...queryAllOrders ()
->>>getUser...
-{ id: 'admin', usertype: 'admin' }
-utils.js: Transaction submitted successfully
->>>getUser...
-{ id: 'GHFarm', usertype: 'producer' }
-
->>>setUserContext...
-Connect to Fabric gateway with userid:GHFarm
->>>utils.submitTx...queryAllOrders ()
-utils.js: Transaction submitted successfully
->>>getUser...
-{ id: 'admin', usertype: 'admin' }
-
->>>setUserContext...
 Connect to Fabric gateway with userid:Walmart
->>>utils.submitTx...orderProduct ({"orderId":"order-0001","productId":"tomato","price":3,"quantity":10,"producerId":"GHFarm","retailerId":"Walmart"})
-Event payload: {"class":"org.supplychainnet.order","key":"\"order-0001\"","currentState":null,"orderId":"order-0001","productId":"tomato","price":"3","quantity":"10","producerId":"GHFarm","retailerId":"Walmart","modifiedBy":"Walmart","currentOrderState":1,"trackingInfo":"","event_type":"createOrder"}
+>>>utils.submitTx...orderProduct ({"orderId":"order-33fd","productId":"stick123","price":"5","quantity":"10","producerId":"ABFarm","retailerId":"Walmart","barcode":"1234562"})
+test { class: 'org.supplychainnet.order',
+  key: '"order-33fd"',
+  currentState: null,
+  orderId: 'order-33fd',
+  productId: 'stick123',
+  price: '5',
+  quantity: '10',
+  producerId: 'ABFarm',
+  retailerId: 'Walmart',
+  modifiedBy: 'Walmart',
+  currentOrderState: 1,
+  trackingInfo: '',
+  event_type: 'createOrder' }
+Event payload: {"class":"org.supplychainnet.order","key":"\"order-33fd\"","currentState":null,"orderId":"order-33fd","productId":"stick123","price":"5","quantity":"10","producerId":"ABFarm","retailerId":"Walmart","modifiedBy":"Walmart","currentOrderState":1,"trackingInfo":"","event_type":"createOrder"}
 
 ------------------------------------
 utils.js: Transaction submitted successfully
 
 Process orderProduct transaction.
-order order-0001 : price = 3, quantity = 10, producer = GHFarm, consumer = Walmart, trackingInfo = , state = 1
+order order-33fd : price = 5, quantity = 10, producer = ABFarm, consumer = Walmart, trackingInfo = , state = 1, barcode = undefined
 
 >>>setUserContext...
 Connect to Fabric gateway with userid:Walmart
 >>>utils.submitTx...queryAllOrders ()
 utils.js: Transaction submitted successfully
-
->>>setUserContext...
-Connect to Fabric gateway with userid:HEB
->>>utils.submitTx...orderProduct ({"orderId":"order-0002","productId":"mango","price":5,"quantity":20,"producerId":"ABFarm","retailerId":"HEB"})
-utils.js: Transaction submitted successfully
-
-Process orderProduct transaction.
-order order-0002 : price = 5, quantity = 20, producer = ABFarm, consumer = HEB, trackingInfo = , state = 1
-Event payload: {"class":"org.supplychainnet.order","key":"\"order-0002\"","currentState":null,"orderId":"order-0002","productId":"mango","price":"5","quantity":"20","producerId":"ABFarm","retailerId":"HEB","modifiedBy":"HEB","currentOrderState":1,"trackingInfo":"","event_type":"createOrder"}
-
-------------------------------------
-
->>>setUserContext...
-Connect to Fabric gateway with userid:HEB
->>>utils.submitTx...orderProduct ({"orderId":"order-0003","productId":"grapes","price":2,"quantity":30,"producerId":"GHFarm","retailerId":"HEB"})
-Event payload: {"class":"org.supplychainnet.order","key":"\"order-0003\"","currentState":null,"orderId":"order-0003","productId":"grapes","price":"2","quantity":"30","producerId":"GHFarm","retailerId":"HEB","modifiedBy":"HEB","currentOrderState":1,"trackingInfo":"","event_type":"createOrder"}
-
-------------------------------------
-utils.js: Transaction submitted successfully
-
-Process orderProduct transaction.
-order order-0003 : price = 2, quantity = 30, producer = GHFarm, consumer = HEB, trackingInfo = , state = 1
-
->>>setUserContext...
-Connect to Fabric gateway with userid:HEB
->>>utils.submitTx...queryAllOrders ()
-utils.js: Transaction submitted successfully
-
->>>setUserContext...
-Connect to Fabric gateway with userid:HEB
->>>utils.submitTx...queryOrder (order-0002)
-utils.js: Transaction submitted successfully
-order order-0002 : price = 5, quantity = 20, producer = ABFarm, consumer = HEB, trackingInfo = , state = 1
-Event payload: {"type":"bcpocevent","orderId":"order-0002","desc":"Query Order was executed for order-0002"}
-
-------------------------------------
-
->>>setUserContext...
-Connect to Fabric gateway with userid:HEB
->>>utils.submitTx...queryOrder (order-0001)
-2020-08-05T13:05:09.559Z - [33mwarn[39m: [DiscoveryEndorsementHandler]: _build_endorse_group_member >> G0:0 - endorsement failed - Error: transaction returned with failure: Error: HEB does not have access to the details of order order-0001
-2020-08-05T13:05:09.562Z - [31merror[39m: [DiscoveryEndorsementHandler]: _endorse - endorsement failed::Error: Endorsement has failed
-    at DiscoveryEndorsementHandler._endorse (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/fabric-network/node_modules/fabric-client/lib/impl/DiscoveryEndorsementHandler.js:185:19)
-utils.js: Error:Error: Endorsement has failed
-utils.js:prepareErrorResponse(): Order id, order-0001 does not exist or the user does not have access to order details at this time.
-{ code: 2000,
-  message:
-   'transaction returned with failure: Error: HEB does not have access to the details of order order-0001',
+>>>getUser...
+{ id: 'admin', usertype: 'admin' }
+utils.js:prepareErrorResponse(): Invalid header;  User, undefined could not be registered.
+{ code: 1001,
+  message: 'Invalid header;  User, undefined could not be registered.',
   error:
-   { Error: Endorsement has failed
-       at DiscoveryEndorsementHandler._endorse (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/fabric-network/node_modules/fabric-client/lib/impl/DiscoveryEndorsementHandler.js:185:19) endorsements: [ [Error], [Error] ] } }
-
->>>setUserContext...
-Connect to Fabric gateway with userid:ABFarm
->>>utils.submitTx...queryAllOrders ()
-utils.js: Transaction submitted successfully
-
->>>setUserContext...
-Connect to Fabric gateway with userid:ABFarm
->>>utils.submitTx...receiveOrder (order-0002)
-utils.js: Transaction submitted successfully
-Process ReceiveOrder transaction.
-order order-0002 : state = 2
-
->>>setUserContext...
-Connect to Fabric gateway with userid:ABFarm
->>>utils.submitTx...assignShipper (order-0002,Fedex)
-utils.js: Transaction submitted successfully
-Process AssignShipper transaction.
-order order-0002 : shipper = Fedex, state = 3
-
->>>setUserContext...
-Connect to Fabric gateway with userid:Fedex
->>>utils.submitTx...queryAllOrders ()
-utils.js: Transaction submitted successfully
-
->>>setUserContext...
-Connect to Fabric gateway with userid:Fedex
->>>utils.submitTx...createShipment (order-0002,a52770f1689e5dff)
-utils.js: Transaction submitted successfully
-Process CreateShipment transaction.
-order order-0002 : trackingInfo = a52770f1689e5dff, state = 4
-
->>>setUserContext...
-Connect to Fabric gateway with userid:Fedex
->>>utils.submitTx...transportShipment (order-0002)
-utils.js: Transaction submitted successfully
-Process TransportShipment transaction.
-order order-0002 : state = 5
-
->>>setUserContext...
-Connect to Fabric gateway with userid:HEB
->>>utils.submitTx...queryAllOrders ()
-utils.js: Transaction submitted successfully
-
->>>setUserContext...
-Connect to Fabric gateway with userid:HEB
->>>utils.submitTx...receiveShipment (order-0002)
-utils.js: Transaction submitted successfully
-Process ReceiveShipment transaction.
-order order-0002 : state = 6
-
->>>setUserContext...
-Connect to Fabric gateway with userid:ACustomer
->>>utils.submitTx...getOrderHistory (order-0002)
-utils.js: Transaction submitted successfully
-
->>>Process getOrderHistory response [{"TxId":"0d210c104e70aad1ca59ce34842db08b86953be44733c58e35ec6d7ae168e3e4","IsDelete":"false","Timestamp":"8/5/2020, 8:05:00 AM CST","Value":{"class":"org.supplychainnet.order","key":"\"order-0002\"","currentState":null,"orderId":"order-0002","productId":"mango","price":"5","quantity":"20","producerId":"ABFarm","retailerId":"HEB","modifiedBy":"HEB","currentOrderState":1,"trackingInfo":""}},{"TxId":"777304ab6b1cdb6db6ac5509c0ac25da960e42fca8e37588dade02efc340ec78","IsDelete":"false","Timestamp":"8/5/2020, 8:05:12 AM CST","Value":{"class":"org.supplychainnet.order","key":"\"order-0002\"","currentState":null,"currentOrderState":2,"modifiedBy":"ABFarm","orderId":"order-0002","price":"5","producerId":"ABFarm","productId":"mango","quantity":"20","retailerId":"HEB","trackingInfo":""}},{"TxId":"ff72bcb1373e7c6f8347bac4b4ecd5565f76b2e53892c3ff5f734badeabf613d","IsDelete":"false","Timestamp":"8/5/2020, 8:05:14 AM CST","Value":{"class":"org.supplychainnet.order","key":"\"order-0002\"","currentState":null,"currentOrderState":3,"modifiedBy":"ABFarm","orderId":"order-0002","price":"5","producerId":"ABFarm","productId":"mango","quantity":"20","retailerId":"HEB","trackingInfo":"","shipperId":"Fedex"}},{"TxId":"87424aacbd6993d904750a380adf687268e621a7484ea2808ac33f279cc29542","IsDelete":"false","Timestamp":"8/5/2020, 8:05:19 AM CST","Value":{"class":"org.supplychainnet.order","key":"\"order-0002\"","currentState":null,"currentOrderState":4,"modifiedBy":"Fedex","orderId":"order-0002","price":"5","producerId":"ABFarm","productId":"mango","quantity":"20","retailerId":"HEB","shipperId":"Fedex","trackingInfo":"a52770f1689e5dff"}},{"TxId":"3781221126d7b8a5e374acd47ea2348ef78047eb569e89b826e0121e51c5a3fb","IsDelete":"false","Timestamp":"8/5/2020, 8:05:21 AM CST","Value":{"class":"org.supplychainnet.order","key":"\"order-0002\"","currentState":null,"currentOrderState":5,"modifiedBy":"Fedex","orderId":"order-0002","price":"5","producerId":"ABFarm","productId":"mango","quantity":"20","retailerId":"HEB","shipperId":"Fedex","trackingInfo":"a52770f1689e5dff"}},{"TxId":"b77d4de4eaaeaa4710e226916d37a9b76bfc37cdee7e9187f571f5646e1e0a36","IsDelete":"false","Timestamp":"8/5/2020, 8:05:25 AM CST","Value":{"class":"org.supplychainnet.order","key":"\"order-0002\"","currentState":null,"currentOrderState":6,"modifiedBy":"HEB","orderId":"order-0002","price":"5","producerId":"ABFarm","productId":"mango","quantity":"20","retailerId":"HEB","shipperId":"Fedex","trackingInfo":"a52770f1689e5dff"}}]
-
->>>setUserContext...
-Connect to Fabric gateway with userid:ACustomer
->>>utils.submitTx...getOrderHistory (order-0001)
-2020-08-05T13:05:30.533Z - [33mwarn[39m: [DiscoveryEndorsementHandler]: _build_endorse_group_member >> G0:0 - endorsement failed - Error: transaction returned with failure: Error: Information about order order-0001 is not available to ACustomer yet. Order status needs to be SHIPMENT_RECEIVED.
-2020-08-05T13:05:30.534Z - [31merror[39m: [DiscoveryEndorsementHandler]: _endorse - endorsement failed::Error: Endorsement has failed
-    at DiscoveryEndorsementHandler._endorse (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/fabric-network/node_modules/fabric-client/lib/impl/DiscoveryEndorsementHandler.js:185:19)
-utils.js: Error:Error: Endorsement has failed
-utils.js:prepareErrorResponse(): There was a problem fetching history for order, 
-{ code: 500,
-  message:
-   'transaction returned with failure: Error: Information about order order-0001 is not available to ACustomer yet. Order status needs to be SHIPMENT_RECEIVED.',
+   TypeError: Promise resolver undefined is not a function
+       at new Promise (<anonymous>)
+       at getUsernamePassword (/opt/ksbc/fabric-contract-ABAC/application/server/supplychain.js:29:16)
+       at /opt/ksbc/fabric-contract-ABAC/application/server/supplychain.js:263:9
+       at Layer.handle [as handle_request] (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/layer.js:95:5)
+       at next (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/route.js:137:13)
+       at Route.dispatch (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/route.js:112:3)
+       at Layer.handle [as handle_request] (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/layer.js:95:5)
+       at /opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/index.js:281:22
+       at Function.process_params (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/index.js:335:12)
+       at next (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/index.js:275:10) }
+utils.js:prepareErrorResponse(): Invalid header;  User, Bigbazzar1 could not be registered.
+{ code: 1001,
+  message: 'Invalid header;  User, Bigbazzar1 could not be registered.',
   error:
-   { Error: Endorsement has failed
-       at DiscoveryEndorsementHandler._endorse (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/fabric-network/node_modules/fabric-client/lib/impl/DiscoveryEndorsementHandler.js:185:19) endorsements: [ [Error], [Error] ] } }
+   TypeError: Promise resolver undefined is not a function
+       at new Promise (<anonymous>)
+       at getUsernamePassword (/opt/ksbc/fabric-contract-ABAC/application/server/supplychain.js:29:16)
+       at /opt/ksbc/fabric-contract-ABAC/application/server/supplychain.js:263:9
+       at Layer.handle [as handle_request] (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/layer.js:95:5)
+       at next (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/route.js:137:13)
+       at Route.dispatch (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/route.js:112:3)
+       at Layer.handle [as handle_request] (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/layer.js:95:5)
+       at /opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/index.js:281:22
+       at Function.process_params (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/index.js:335:12)
+       at next (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/index.js:275:10) }
+utils.js:prepareErrorResponse(): Invalid header;  User, Bigbazzar1 could not be registered.
+{ code: 1001,
+  message: 'Invalid header;  User, Bigbazzar1 could not be registered.',
+  error:
+   TypeError: Promise resolver undefined is not a function
+       at new Promise (<anonymous>)
+       at getUsernamePassword (/opt/ksbc/fabric-contract-ABAC/application/server/supplychain.js:46:16)
+       at /opt/ksbc/fabric-contract-ABAC/application/server/supplychain.js:263:9
+       at Layer.handle [as handle_request] (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/layer.js:95:5)
+       at next (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/route.js:137:13)
+       at Route.dispatch (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/route.js:112:3)
+       at Layer.handle [as handle_request] (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/layer.js:95:5)
+       at /opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/index.js:281:22
+       at Function.process_params (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/index.js:335:12)
+       at next (/opt/ksbc/fabric-contract-ABAC/application/server/node_modules/express/lib/router/index.js:275:10) }
 
->>>setUserContext...
-Connect to Fabric gateway with userid:FDA
->>>utils.submitTx...queryAllOrders ()
-utils.js: Transaction submitted successfully
+------------  utils.registerUser ---------------
 
->>>setUserContext...
-Connect to Fabric gateway with userid:FDA
->>>utils.submitTx...getOrderHistory (order-0001)
-utils.js: Transaction submitted successfully
+ userid: Bigbuzz, pwd: Bigbuzz, usertype: retailer
 
->>>Process getOrderHistory response [{"TxId":"0296b194dd142fb2cc39be5a9d1fe7e960772330c7ed55a33e340adc9384ad4a","IsDelete":"false","Timestamp":"8/5/2020, 8:04:55 AM CST","Value":{"class":"org.supplychainnet.order","key":"\"order-0001\"","currentState":null,"orderId":"order-0001","productId":"tomato","price":"3","quantity":"10","producerId":"GHFarm","retailerId":"Walmart","modifiedBy":"Walmart","currentOrderState":1,"trackingInfo":""}}]
+ Secret returned: Bigbuzz
+utils.js:prepareErrorResponse(): Verify if the user is registered and enrolled.
+{ code: 1000,
+  message: 'Verify if the user is registered and enrolled.',
+  error: {} }
 
->>>setUserContext...
-Connect to Fabric gateway with userid:FDA
->>>utils.submitTx...getOrderHistory (order-0002)
-utils.js: Transaction submitted successfully
-
->>>Process getOrderHistory response [{"TxId":"0d210c104e70aad1ca59ce34842db08b86953be44733c58e35ec6d7ae168e3e4","IsDelete":"false","Timestamp":"8/5/2020, 8:05:00 AM CST","Value":{"class":"org.supplychainnet.order","key":"\"order-0002\"","currentState":null,"orderId":"order-0002","productId":"mango","price":"5","quantity":"20","producerId":"ABFarm","retailerId":"HEB","modifiedBy":"HEB","currentOrderState":1,"trackingInfo":""}},{"TxId":"777304ab6b1cdb6db6ac5509c0ac25da960e42fca8e37588dade02efc340ec78","IsDelete":"false","Timestamp":"8/5/2020, 8:05:12 AM CST","Value":{"class":"org.supplychainnet.order","key":"\"order-0002\"","currentState":null,"currentOrderState":2,"modifiedBy":"ABFarm","orderId":"order-0002","price":"5","producerId":"ABFarm","productId":"mango","quantity":"20","retailerId":"HEB","trackingInfo":""}},{"TxId":"ff72bcb1373e7c6f8347bac4b4ecd5565f76b2e53892c3ff5f734badeabf613d","IsDelete":"false","Timestamp":"8/5/2020, 8:05:14 AM CST","Value":{"class":"org.supplychainnet.order","key":"\"order-0002\"","currentState":null,"currentOrderState":3,"modifiedBy":"ABFarm","orderId":"order-0002","price":"5","producerId":"ABFarm","productId":"mango","quantity":"20","retailerId":"HEB","trackingInfo":"","shipperId":"Fedex"}},{"TxId":"87424aacbd6993d904750a380adf687268e621a7484ea2808ac33f279cc29542","IsDelete":"false","Timestamp":"8/5/2020, 8:05:19 AM CST","Value":{"class":"org.supplychainnet.order","key":"\"order-0002\"","currentState":null,"currentOrderState":4,"modifiedBy":"Fedex","orderId":"order-0002","price":"5","producerId":"ABFarm","productId":"mango","quantity":"20","retailerId":"HEB","shipperId":"Fedex","trackingInfo":"a52770f1689e5dff"}},{"TxId":"3781221126d7b8a5e374acd47ea2348ef78047eb569e89b826e0121e51c5a3fb","IsDelete":"false","Timestamp":"8/5/2020, 8:05:21 AM CST","Value":{"class":"org.supplychainnet.order","key":"\"order-0002\"","currentState":null,"currentOrderState":5,"modifiedBy":"Fedex","orderId":"order-0002","price":"5","producerId":"ABFarm","productId":"mango","quantity":"20","retailerId":"HEB","shipperId":"Fedex","trackingInfo":"a52770f1689e5dff"}},{"TxId":"b77d4de4eaaeaa4710e226916d37a9b76bfc37cdee7e9187f571f5646e1e0a36","IsDelete":"false","Timestamp":"8/5/2020, 8:05:25 AM CST","Value":{"class":"org.supplychainnet.order","key":"\"order-0002\"","currentState":null,"currentOrderState":6,"modifiedBy":"HEB","orderId":"order-0002","price":"5","producerId":"ABFarm","productId":"mango","quantity":"20","retailerId":"HEB","shipperId":"Fedex","trackingInfo":"a52770f1689e5dff"}}]
+------------  utils.enrollUser -----------------
+userid: Bigbuzz, pwd: Bigbuzz, usertype:Retailer
+first  ca.org1.example.com
+msg: Successfully enrolled user, Bigbuzz and imported into the wallet

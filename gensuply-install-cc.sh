@@ -1,14 +1,14 @@
 #!/bin/bash
 ###Installcode
 
-export chainname=gensupplychainnet1      #gensupply
-export signpackge=gensupplychainnet1     #gensupply
+export chainname=gensupplychainnet2      #gensupply
+export signpackge=gensupplychainnet2     #gensupply
 docker exec cli peer chaincode list --installed
 docker exec cli peer chaincode list --instantiated -C channelone
 
 ### Non sign package install
-docker exec cli peer chaincode package $chainname.out -n $chainname -v 1.1 -p /opt/gopath/src/github.com/chaincode/fcabac/contract -l node  # -s -S -i "AND('OrgA.admin')" 
-docker exec cli peer chaincode install $chainname.out -n $chainname -v 1.1 -l node
+docker exec cli peer chaincode package $chainname.out -n $chainname -v 1.0 -p /opt/gopath/src/github.com/chaincode/fcabac/contract -l node  # -s -S -i "AND('OrgA.admin')" 
+docker exec cli peer chaincode install $chainname.out -n $chainname -v 1.0 -l node
 #or
 #docker exec -e "CORE_PEER_ADDRESS=peer1.org1.example.com:7051" 
 #            -e "CORE_PEER_ID=peer1.org1.example.com" 
@@ -37,7 +37,7 @@ docker exec cli peer chaincode install $chainname.out -n $chainname -v 1.1 -l no
 
 
 export ORDERER_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-docker exec cli peer chaincode instantiate -o orderer.example.com:7050 --tls true --cafile $ORDERER_CA -C channelone $chainname.out -n $chainname -v 1.1 -l node -c '{"Args":["init"]}'  -P "OR ('Org1MSP.member' , 'Org1MSP.peer')"
+docker exec cli peer chaincode instantiate -o orderer.example.com:7050 --tls true --cafile $ORDERER_CA -C channelone $chainname.out -n $chainname -v 1.0 -l node -c '{"Args":["init"]}'  -P "OR ('Org1MSP.member' , 'Org1MSP.peer')"
 ### signpackage
 #docker exec cli peer chaincode instantiate -o orderer.example.com:7050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel $signpackge.out -n $chainname -v 1.0 -l node -c '{"Args":["init"]}'  -P "OR ('Org1MSP.member' , 'Org1MSP.peer')"
 

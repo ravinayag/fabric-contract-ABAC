@@ -161,8 +161,8 @@ utils.events = async () => {
                 // within a block that will match on the second parameter in the registration
                 // from the chaincode with the ID of the first parameter.
 
-                //let event_payload = JSON.parse(event.payload.toString());
-
+                let event_payload = JSON.parse(event.payload.toString());
+                console.log("test", event_payload);
                 console.log("Event payload: " + event.payload.toString());
                 console.log("\n------------------------------------");
             }, (err) => {
