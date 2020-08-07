@@ -1,8 +1,8 @@
 /*
-* Copyright IBM Corp All Rights Reserved
-*
-* SPDX-License-Identifier: Apache-2.0
-*/
+ * Copyright IBM Corp All Rights Reserved
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 'use strict';
 
 // Bring key classes into scope, most importantly Fabric SDK network class
@@ -20,7 +20,7 @@ var wallet;
 var bLocalHost;
 var ccp;
 var orgMSPID;
-const EVENT_TYPE = "bcpocevent";  //  HLFabric EVENT
+const EVENT_TYPE = "bcpocevent"; //  HLFabric EVENT
 
 const SUCCESS = 0;
 const utils = {};
@@ -39,14 +39,14 @@ utils.prepareErrorResponse = (error, code, message) => {
         errorMsg = null;
     }
 
-    let result = { "code": code, "message": errorMsg?errorMsg:message, "error": error };
+    let result = { "code": code, "message": errorMsg ? errorMsg : message, "error": error };
     console.log("utils.js:prepareErrorResponse(): " + message);
     console.log(result);
     return result;
 }
 
 
-utils.connectGatewayFromConfig = async () => {
+utils.connectGatewayFromConfig = async() => {
     console.log(">>>connectGatewayFromConfig:  ");
 
     // A gateway defines the peers used to access Fabric networks
@@ -105,7 +105,9 @@ utils.connectGatewayFromConfig = async () => {
         // Connect to gateway using application specified parameters
         console.log('Connect to Fabric gateway.');
         await gateway.connect(ccp, {
-            identity: userid, wallet: wallet, discovery: { enabled: true, asLocalhost: bLocalHost }
+            identity: userid,
+            wallet: wallet,
+            discovery: { enabled: true, asLocalhost: bLocalHost }
             //identity: userid, wallet: wallet, discovery: { enabled: true, asLocalhost: true }
         });
 
@@ -121,126 +123,122 @@ utils.connectGatewayFromConfig = async () => {
 
     } catch (error) {
         console.log('Error connecting to Fabric network. ' + error.toString());
-    } finally {
-    }
+    } finally {}
     return contract;
 }
 
-utils.events = async () => {
-    // get an eventhub once the fabric client has a user assigned. The user
-    // is required because the event registration must be signed
+utils.events = async() => {
+        // get an eventhub once the fabric client has a user assigned. The user
+        // is required because the event registration must be signed
 
-    //  Eventhub is attached to a peer.  Get the peer, to register an event hub.
-    //  client -> channel -> peer -> eventHub
+        //  Eventhub is attached to a peer.  Get the peer, to register an event hub.
+        //  client -> channel -> peer -> eventHub
 
-    const client = gateway.getClient();
-    var channel = client.getChannel(configdata["channel_name"]);
-    var peers = channel.getChannelPeers();
-    if (peers.length == 0) {
-        throw new Error("Error after call to channel.getChannelPeers(): Channel has no peers !");
-    }
+        const client = gateway.getClient();
+        var channel = client.getChannel(configdata["channel_name"]);
+        var peers = channel.getChannelPeers();
+        if (peers.length == 0) {
+            throw new Error("Error after call to channel.getChannelPeers(): Channel has no peers !");
+        }
 
-    console.log("Connecting to event hub..." + peers[0].getName());
-    //  Assuming that we want to connect to the first peer in the peers list
-    var channel_event_hub = channel.getChannelEventHub(peers[0].getName());
+        console.log("Connecting to event hub..." + peers[0].getName());
+        //  Assuming that we want to connect to the first peer in the peers list
+        var channel_event_hub = channel.getChannelEventHub(peers[0].getName());
 
-    // to see the event payload, use 'true' in the call to channel_event_hub.connect(boolean)
-    channel_event_hub.connect(true);
+        // to see the event payload, use 'true' in the call to channel_event_hub.connect(boolean)
+        channel_event_hub.connect(true);
 
-    let event_monitor = new Promise((resolve, reject) => {
-        /*  Sample usage of registerChaincodeEvent
-        registerChaincodeEvent ('chaincodename', 'regularExpressionForEventName',
-               callbackfunction(...) => {...},
-               callbackFunctionForErrorHandling (...) => {...},
-               // options:
-               {startBlock:23, endBlock:30, unregister: true, disconnect: true}
-        */
-        var regid = channel_event_hub.registerChaincodeEvent(configdata["smart_contract_name"], EVENT_TYPE,
-            (event, block_num, txnid, status) => {
-                // This callback will be called when there is a chaincode event name
-                // within a block that will match on the second parameter in the registration
-                // from the chaincode with the ID of the first parameter.
+        let event_monitor = new Promise((resolve, reject) => {
+            /*  Sample usage of registerChaincodeEvent
+            registerChaincodeEvent ('chaincodename', 'regularExpressionForEventName',
+                   callbackfunction(...) => {...},
+                   callbackFunctionForErrorHandling (...) => {...},
+                   // options:
+                   {startBlock:23, endBlock:30, unregister: true, disconnect: true}
+            */
+            var regid = channel_event_hub.registerChaincodeEvent(configdata["smart_contract_name"], EVENT_TYPE,
+                (event, block_num, txnid, status) => {
+                    // This callback will be called when there is a chaincode event name
+                    // within a block that will match on the second parameter in the registration
+                    // from the chaincode with the ID of the first parameter.
 
-                //let event_payload = JSON.parse(event.payload.toString());
+                    let event_payload = JSON.parse(event.payload.toString());
+                    console.log("test", event_payload);
+                    console.log("Event payload: " + event.payload.toString());
+                    console.log("\n------------------------------------");
+                }, (err) => {
+                    // this is the callback if something goes wrong with the event registration or processing
+                    reject(new Error('There was a problem with the eventhub in registerTxEvent ::' + err));
+                }, { disconnect: false } //continue to listen and not disconnect when complete
+            );
+        }, (err) => {
+            console.log("At creation of event_monitor: Error:" + err.toString());
+            throw (err);
+        });
 
-                console.log("Event payload: " + event.payload.toString());
-                console.log("\n------------------------------------");
-            }, (err) => {
-                // this is the callback if something goes wrong with the event registration or processing
-                reject(new Error('There was a problem with the eventhub in registerTxEvent ::' + err));
-            },
-            { disconnect: false } //continue to listen and not disconnect when complete
-        );
-    }, (err) => {
-        console.log("At creation of event_monitor: Error:" + err.toString());
-        throw (err);
-    });
-
-    Promise.all([event_monitor]);
-}  //  end of events()
+        Promise.all([event_monitor]);
+    } //  end of events()
 
 utils.submitTx = async(contract, txName, ...args) => {
-    console.log(">>>utils.submitTx..."+txName+" ("+args+")");
+    console.log(">>>utils.submitTx..." + txName + " (" + args + ")");
     let result = contract.submitTransaction(txName, ...args);
-    return result.then (response => {
+    return result.then(response => {
         // console.log ('Transaction submitted successfully;  Response: ', response.toString());
-        console.log ('utils.js: Transaction submitted successfully');
+        console.log('utils.js: Transaction submitted successfully');
         return Promise.resolve(response.toString());
-    },(error) =>
-        {
-          console.log ('utils.js: Error:' + error.toString());
-          return Promise.reject(error);
-        });
+    }, (error) => {
+        console.log('utils.js: Error:' + error.toString());
+        return Promise.reject(error);
+    });
 }
 
 //  function registerUser
 //  Purpose: Utility function for registering users with HL Fabric CA.
-utils.registerUser = async (userid, userpwd, usertype, adminIdentity) => {
-    console.log("\n------------  utils.registerUser ---------------");
-    console.log("\n userid: " + userid + ", pwd: " + userpwd + ", usertype: " + usertype)
+utils.registerUser = async(userid, userpwd, usertype, adminIdentity) => {
+        console.log("\n------------  utils.registerUser ---------------");
+        console.log("\n userid: " + userid + ", pwd: " + userpwd + ", usertype: " + usertype)
 
-    const gateway = new Gateway();
+        const gateway = new Gateway();
 
-    // Connect to gateway as admin
-    await gateway.connect(ccp, { wallet, identity: adminIdentity, discovery: { enabled: false, asLocalhost: bLocalHost } });
+        // Connect to gateway as admin
+        await gateway.connect(ccp, { wallet, identity: adminIdentity, discovery: { enabled: false, asLocalhost: bLocalHost } });
 
-    const orgs = ccp.organizations;
-    const CAs = ccp.certificateAuthorities;
-    const fabricCAKey = orgs[orgMSPID].certificateAuthorities[0];
-    const caURL = CAs[fabricCAKey].url;
-    const ca = new FabricCAServices(caURL, { trustedRoots: [], verify: false });
+        const orgs = ccp.organizations;
+        const CAs = ccp.certificateAuthorities;
+        const fabricCAKey = orgs[orgMSPID].certificateAuthorities[0];
+        const caURL = CAs[fabricCAKey].url;
+        const ca = new FabricCAServices(caURL, { trustedRoots: [], verify: false });
 
-    var newUserDetails = {
-        enrollmentID: userid,
-        enrollmentSecret: userpwd,
-        role: "client",
-        //affiliation: orgMSPID,
-        //profile: 'tls',
-        attrs: [
-            {
+        var newUserDetails = {
+            enrollmentID: userid,
+            enrollmentSecret: userpwd,
+            role: "client",
+            //affiliation: orgMSPID,
+            //profile: 'tls',
+            attrs: [{
                 "name": "usertype",
                 "value": usertype,
                 "ecert": true
             }],
-        maxEnrollments: 5
-    };
+            maxEnrollments: 5
+        };
 
-    //  Register is done using admin signing authority
-    return ca.register(newUserDetails, gateway.getCurrentIdentity())
-        .then(newPwd => {
-            //  if a password was set in 'enrollmentSecret' field of newUserDetails,
-            //  the same password is returned by "register".
-            //  if a password was not set in 'enrollmentSecret' field of newUserDetails,
-            //  then a generated password is returned by "register".
-            console.log('\n Secret returned: ' + newPwd);
-            return newPwd;
-        }, error => {
-            console.log('Error in register();  ERROR returned: ' + error.toString());
-            return Promise.reject(error);
-        });
-}  //  end of function registerUser
+        //  Register is done using admin signing authority
+        return ca.register(newUserDetails, gateway.getCurrentIdentity())
+            .then(newPwd => {
+                //  if a password was set in 'enrollmentSecret' field of newUserDetails,
+                //  the same password is returned by "register".
+                //  if a password was not set in 'enrollmentSecret' field of newUserDetails,
+                //  then a generated password is returned by "register".
+                console.log('\n Secret returned: ' + newPwd);
+                return newPwd;
+            }, error => {
+                console.log('Error in register();  ERROR returned: ' + error.toString());
+                return Promise.reject(error);
+            });
+    } //  end of function registerUser
 
-utils.enrollUser = async (userid, userpwd, usertype) => {
+utils.enrollUser = async(userid, userpwd, usertype) => {
     console.log("\n------------  utils.enrollUser -----------------");
     console.log("userid: " + userid + ", pwd: " + userpwd + ", usertype:" + usertype);
 
@@ -255,12 +253,11 @@ utils.enrollUser = async (userid, userpwd, usertype) => {
     var newUserDetails = {
         enrollmentID: userid,
         enrollmentSecret: userpwd,
-        attrs: [
-            {
-                "name": "usertype", // application role
-                "value": usertype,
-                "ecert": true
-            }]
+        attrs: [{
+            "name": "usertype", // application role
+            "value": usertype,
+            "ecert": true
+        }]
     };
 
     return ca.enroll(newUserDetails).then(enrollment => {
@@ -286,36 +283,35 @@ utils.enrollUser = async (userid, userpwd, usertype) => {
 //  Input:      userid - which has been registered and enrolled earlier (so that certificates are
 //              available in the wallet)
 //  Output:     no explicit output;  (Global variable) contract will be set to this user's context
-utils.setUserContext = async (userid, pwd) => {
-    console.log('\n>>>setUserContext...');
+utils.setUserContext = async(userid, pwd) => {
+        console.log('\n>>>setUserContext...');
 
-    // It is possible that the user has been registered and enrolled in Fabric CA earlier
-    // and the certificates (in the wallet) could have been removed.
-    // Note that this case is not handled here.
+        // It is possible that the user has been registered and enrolled in Fabric CA earlier
+        // and the certificates (in the wallet) could have been removed.
+        // Note that this case is not handled here.
 
-    // Verify if user is already enrolled
-    const userExists = await wallet.exists(userid);
-    if (!userExists) {
-        console.log("An identity for the user: " + userid + " does not exist in the wallet");
-        console.log('Enroll user before retrying');
-        throw ("Identity does not exist for userid: " + userid);
-    }
+        // Verify if user is already enrolled
+        const userExists = await wallet.exists(userid);
+        if (!userExists) {
+            console.log("An identity for the user: " + userid + " does not exist in the wallet");
+            console.log('Enroll user before retrying');
+            throw ("Identity does not exist for userid: " + userid);
+        }
 
-    try {
-        // Connect to gateway using application specified parameters
-        console.log('Connect to Fabric gateway with userid:' + userid);
-        let userGateway = new Gateway();
-        await userGateway.connect(ccp, { identity: userid, wallet: wallet, discovery: { enabled: true, asLocalhost: bLocalHost } });
+        try {
+            // Connect to gateway using application specified parameters
+            console.log('Connect to Fabric gateway with userid:' + userid);
+            let userGateway = new Gateway();
+            await userGateway.connect(ccp, { identity: userid, wallet: wallet, discovery: { enabled: true, asLocalhost: bLocalHost } });
 
-        network = await userGateway.getNetwork(configdata["channel_name"]);
-        contract = await network.getContract(configdata["smart_contract_name"]);
+            network = await userGateway.getNetwork(configdata["channel_name"]);
+            contract = await network.getContract(configdata["smart_contract_name"]);
 
-        return contract;
-    }
-    catch (error) { throw (error); }
-}  //  end of setUserContext(userid)
+            return contract;
+        } catch (error) { throw (error); }
+    } //  end of setUserContext(userid)
 
-utils.isUserEnrolled = async (userid) => {
+utils.isUserEnrolled = async(userid) => {
     return wallet.exists(userid).then(result => {
         return result;
     }, error => {
@@ -326,67 +322,67 @@ utils.isUserEnrolled = async (userid) => {
 
 //  function getUser
 //  Purpose: get specific registered user
-utils.getUser = async (userid, adminIdentity) => {
-    console.log(">>>getUser...");
-    const gateway = new Gateway();
-    // Connect to gateway as admin
-    await gateway.connect(ccp, { wallet, identity: adminIdentity, discovery: { enabled: false, asLocalhost: bLocalHost } });
-    let client = gateway.getClient();
-    let fabric_ca_client = client.getCertificateAuthority();
-    let idService = fabric_ca_client.newIdentityService();
-    let user = await idService.getOne(userid, gateway.getCurrentIdentity());
-    let result = {"id": userid};
+utils.getUser = async(userid, adminIdentity) => {
+        console.log(">>>getUser...");
+        const gateway = new Gateway();
+        // Connect to gateway as admin
+        await gateway.connect(ccp, { wallet, identity: adminIdentity, discovery: { enabled: false, asLocalhost: bLocalHost } });
+        let client = gateway.getClient();
+        let fabric_ca_client = client.getCertificateAuthority();
+        let idService = fabric_ca_client.newIdentityService();
+        let user = await idService.getOne(userid, gateway.getCurrentIdentity());
+        let result = { "id": userid };
 
-    // for admin, usertype is "admin";
-    if (userid == "admin") {
-        result.usertype = userid;
-    } else { // look through user attributes for "usertype"
-        let j = 0;
-        while (user.result.attrs[j].name !== "usertype") j++;
+        // for admin, usertype is "admin";
+        if (userid == "admin") {
+            result.usertype = userid;
+        } else { // look through user attributes for "usertype"
+            let j = 0;
+            while (user.result.attrs[j].name !== "usertype") j++;
             result.usertype = user.result.attrs[j].value;
-    }
-    console.log (result);
-    return Promise.resolve(result);
-}  //  end of function getUser
+        }
+        console.log(result);
+        return Promise.resolve(result);
+    } //  end of function getUser
 
 //  function getAllUsers
 //  Purpose: get all enrolled users
-utils.getAllUsers = async (adminIdentity) => {
-    const gateway = new Gateway();
+utils.getAllUsers = async(adminIdentity) => {
+        const gateway = new Gateway();
 
-    // Connect to gateway as admin
-    await gateway.connect(ccp, { wallet, identity: adminIdentity, discovery: { enabled: false, asLocalhost: bLocalHost } });
-    let client = gateway.getClient();
-    let fabric_ca_client = client.getCertificateAuthority();
-    let idService = fabric_ca_client.newIdentityService();
-    let user = gateway.getCurrentIdentity();
-    let userList = await idService.getAll(user);
-    let identities = userList.result.identities;
-    let result = [];
-    let tmp;
-    let attributes;
+        // Connect to gateway as admin
+        await gateway.connect(ccp, { wallet, identity: adminIdentity, discovery: { enabled: false, asLocalhost: bLocalHost } });
+        let client = gateway.getClient();
+        let fabric_ca_client = client.getCertificateAuthority();
+        let idService = fabric_ca_client.newIdentityService();
+        let user = gateway.getCurrentIdentity();
+        let userList = await idService.getAll(user);
+        let identities = userList.result.identities;
+        let result = [];
+        let tmp;
+        let attributes;
 
-    // for all identities
-    for (var i = 0; i < identities.length; i++) {
-        tmp = {};
-        tmp.id = identities[i].id;
-        tmp.usertype = "";
+        // for all identities
+        for (var i = 0; i < identities.length; i++) {
+            tmp = {};
+            tmp.id = identities[i].id;
+            tmp.usertype = "";
 
-        if (tmp.id == "admin")
-            tmp.usertype = tmp.id;
-        else {
-            attributes = identities[i].attrs;
-            // look through all attributes for one called "usertype"
-            for (var j = 0; j < attributes.length; j++)
-                if (attributes[j].name == "usertype") {
-                    tmp.usertype = attributes[j].value;
-                    break;
-                }
+            if (tmp.id == "admin")
+                tmp.usertype = tmp.id;
+            else {
+                attributes = identities[i].attrs;
+                // look through all attributes for one called "usertype"
+                for (var j = 0; j < attributes.length; j++)
+                    if (attributes[j].name == "usertype") {
+                        tmp.usertype = attributes[j].value;
+                        break;
+                    }
+            }
+            result.push(tmp);
         }
-        result.push(tmp);
-    }
-    return result;
-}  //  end of function getAllUsers
+        return result;
+    } //  end of function getAllUsers
 
 //  function getRandomNum
 //  Purpose: Provide a random tracking number for the createShipment transaction
