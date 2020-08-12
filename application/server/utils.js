@@ -141,41 +141,40 @@ utils.events = async() => {
             throw new Error("Error after call to channel.getChannelPeers(): Channel has no peers !");
         }
 
-    console.log("Connecting to event hub..." + peers[0].getName());
-    //  Assuming that we want to connect to the first peer in the peers list
-    var channel_event_hub = channel.getChannelEventHub(peers[0].getName());
+        console.log("Connecting to event hub..." + peers[0].getName());
+        //  Assuming that we want to connect to the first peer in the peers list
+        var channel_event_hub = channel.getChannelEventHub(peers[0].getName());
 
-    // to see the event payload, use 'true' in the call to channel_event_hub.connect(boolean)
-    channel_event_hub.connect(true);
+        // to see the event payload, use 'true' in the call to channel_event_hub.connect(boolean)
+        channel_event_hub.connect(true);
 
-    let event_monitor = new Promise((resolve, reject) => {
-        /*  Sample usage of registerChaincodeEvent
-        registerChaincodeEvent ('chaincodename', 'regularExpressionForEventName',
-               callbackfunction(...) => {...},
-               callbackFunctionForErrorHandling (...) => {...},
-               // options:
-               {startBlock:23, endBlock:30, unregister: true, disconnect: true}
-        */
-        var regid = channel_event_hub.registerChaincodeEvent(configdata["smart_contract_name"], EVENT_TYPE,
-            (event, block_num, txnid, status) => {
-                // This callback will be called when there is a chaincode event name
-                // within a block that will match on the second parameter in the registration
-                // from the chaincode with the ID of the first parameter.
+        let event_monitor = new Promise((resolve, reject) => {
+            /*  Sample usage of registerChaincodeEvent
+            registerChaincodeEvent ('chaincodename', 'regularExpressionForEventName',
+                   callbackfunction(...) => {...},
+                   callbackFunctionForErrorHandling (...) => {...},
+                   // options:
+                   {startBlock:23, endBlock:30, unregister: true, disconnect: true}
+            */
+            var regid = channel_event_hub.registerChaincodeEvent(configdata["smart_contract_name"], EVENT_TYPE,
+                (event, block_num, txnid, status) => {
+                    // This callback will be called when there is a chaincode event name
+                    // within a block that will match on the second parameter in the registration
+                    // from the chaincode with the ID of the first parameter.
 
-                let event_payload = JSON.parse(event.payload.toString());
-                console.log("test", event_payload);
-                console.log("Event payload: " + event.payload.toString());
-                console.log("\n------------------------------------");
-            }, (err) => {
-                // this is the callback if something goes wrong with the event registration or processing
-                reject(new Error('There was a problem with the eventhub in registerTxEvent ::' + err));
-            },
-            { disconnect: false } //continue to listen and not disconnect when complete
-        );
-    }, (err) => {
-        console.log("At creation of event_monitor: Error:" + err.toString());
-        throw (err);
-    });
+                    let event_payload = JSON.parse(event.payload.toString());
+                    console.log("test", event_payload);
+                    console.log("Event payload: " + event.payload.toString());
+                    console.log("\n------------------------------------");
+                }, (err) => {
+                    // this is the callback if something goes wrong with the event registration or processing
+                    reject(new Error('There was a problem with the eventhub in registerTxEvent ::' + err));
+                }, { disconnect: false } //continue to listen and not disconnect when complete
+            );
+        }, (err) => {
+            console.log("At creation of event_monitor: Error:" + err.toString());
+            throw (err);
+        });
 
         Promise.all([event_monitor]);
     } //  end of events()
@@ -184,8 +183,8 @@ utils.submitTx = async(contract, txName, ...args) => {
     console.log(">>>utils.submitTx..." + txName + " (" + args + ")");
     let result = contract.submitTransaction(txName, ...args);
     return result.then(response => {
-        // console.log ('Transaction submitted successfully;  Response: ', response.toString());
-        console.log('utils.js: Transaction submitted successfully');
+        console.log('Transaction submitted successfully;  Response: ', response.toString());
+        //console.log('utils.js: Transaction submitted successfully');
         return Promise.resolve(response.toString());
     }, (error) => {
         console.log('utils.js: Error:' + error.toString());
@@ -388,7 +387,7 @@ utils.getAllUsers = async(adminIdentity) => {
 //  function getRandomNum
 //  Purpose: Provide a random tracking number for the createShipment transaction
 utils.getRandomNum = () => {
-    const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1)
+    const s4 = () => Math.floor((2 + Math.random()) * 0x10000).toString(16).substring(1)
     return `${s4()}${s4()}${s4()}${s4()}`
 }
 

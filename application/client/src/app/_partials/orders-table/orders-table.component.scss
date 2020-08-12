@@ -7,12 +7,25 @@
         //overflow: scroll;
         min-height: 200px;
     }
+    .mat-header-cell {
+        font-size: 15px;
+        font-weight: bold;
+        color: black;
+        background-color: #f1f1f1;
+        //display: flex;
+        //justify-content: flex-end;
+    }
+    .mat-cell {
+        color: $dark-grey;
+    }
     table {
         width: 100%;
     }
     .mat-form-field {
         font-size: 14px;
         width: 100%;
+        text-align: right;
+        font-family: Verdana;
     }
     tr.example-detail-row {
         height: 0;

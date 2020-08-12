@@ -50,7 +50,7 @@ export class OrderFormComponent implements OnInit {
     }
 
     this.api.body = {
-      orderId: "order-" + uuid(),
+      orderId: "Req#-" + uuid(),
       productId: this.messageForm.controls.productid.value,
       price: this.messageForm.controls.price.value,
       quantity: this.messageForm.controls.quantity.value,

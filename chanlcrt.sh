@@ -5,7 +5,7 @@ export COMPOSE_PROJECT_NAME=newnet
 export CHANNEL_NAME=channelone
 configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channelone.tx -channelID $CHANNEL_NAME
 configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors_channelone.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
-configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors_channelone.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
+configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors_channelone.tx -channelID $CHANNEL_NAME -asOrg Org2MSP
 
 export ORDERER_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 export CORE_PEER_TLS_ENABLED=true

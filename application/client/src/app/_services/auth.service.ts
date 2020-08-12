@@ -17,7 +17,7 @@ export class AuthService {
     // this.users = userService.getAll();
   }
 
-  baseUrl = "http://164.52.195.83:3000";
+  baseUrl = "http://192.168.92.136:3000";
 
 
   register(user){

@@ -1,15 +1,24 @@
 @import './../../colors.scss';
-
-h4{
-  text-align: center;
+h4 {
+    text-align: center;
 }
 
-table{
-  width: 100%;
-  text-align: left;
-  background-color: $pastel-blue;
+table {
+    width: 100%;
+    text-align: left;
+    background-color: $pastel-blue;
 }
 
-mat-form-field{
-  width:100%;
+.mat-header-cell {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    background-color: #f1f1f1;
+    //display: flex;
+    //justify-content: flex-end;
+    font-family: Verdana;
+}
+
+mat-form-field {
+    width: 100%;
 }

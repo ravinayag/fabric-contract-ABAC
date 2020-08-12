@@ -1,8 +1,8 @@
 #!/bin/bash
 ###Installcode
 
-export chainname=gensupplychainnet2      #gensupply
-export signpackge=gensupplychainnet2     #gensupply
+export chainname=gensupplychainnet      #gensupply
+export signpackge=gensupplychainnet     #gensupply
 docker exec cli peer chaincode list --installed
 docker exec cli peer chaincode list --instantiated -C channelone
 

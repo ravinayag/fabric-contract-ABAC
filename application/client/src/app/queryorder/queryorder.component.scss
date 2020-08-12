@@ -1,13 +1,12 @@
 label {
     display: block;
-    
-    input, textarea {
+    input,
+    textarea {
         display: block;
         width: 100%;
         margin-bottom: 20px;
         padding: 1em;
     }
-
     .error {
         margin-top: -20px;
         background: yellow;
@@ -22,8 +21,10 @@ table {
     border-collapse: collapse;
     width: 100%;
 }
-  
-table, th, td {
+
+table,
+th,
+td {
     border: 1px solid black;
 }
 
@@ -33,7 +34,8 @@ th {
     color: white;
 }
 
-th, td {
+th,
+td {
     padding: 5px;
     text-align: center;
 }
