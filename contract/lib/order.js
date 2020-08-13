@@ -18,7 +18,7 @@ const orderState = {
     ORDER_CLOSED: 7, // Not currently used
     ORDER_DATE: 8, //Retailer - Booker
     ORDER_VALUE: 9, //Retailer - Booker
-    ORDER_BARCODE: 10 //Producer
+    // ORDER_BARCODE: 10 //Producer
 
 
 
@@ -47,7 +47,7 @@ class Order extends State {
       {Enumerated orderStates} currentOrderState
       {String} modifiedBy
       {String} date
-      {Integer} barcode
+      {String} barcode
     */
 
     /**
@@ -102,9 +102,9 @@ class Order extends State {
         this.currentOrderState = orderState.ORDER_VALUE;
     }
 
-    setStateToOrderBarcode() {
-        this.currentOrderState = orderState.ORDER_BARCODE;
-    }
+    //setStateToOrderBarcode() {
+    //    this.currentOrderState = orderState.ORDER_BARCODE;
+    //}
     static fromBuffer(buffer) {
         return Order.deserialize(Buffer.from(JSON.parse(buffer)));
     }

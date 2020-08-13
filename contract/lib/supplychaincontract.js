@@ -65,7 +65,7 @@ class SupplychainContract extends Contract {
      * @param {Integer} quantity
      * @param {String} producerId
      * @param {String} retailerId
-     * @param {Integer} barcode
+     * @param {String} barcode
 
      * Usage: submitTransaction ('orderProduct', 'Order001', 'mango', 100.00, 100, 'farm1', 'walmart', 9100022233)
      * Usage: ["Order100", "mango", "10.00", "102", "farm1", "walmart"]
@@ -101,11 +101,13 @@ class SupplychainContract extends Contract {
         order.retailerId = order_details.retailerId;
         order.modifiedBy = await this.getCurrentUserId(ctx);
         order.currentOrderState = OrderStates.ORDER_CREATED;
+        order.barcode = order_details.barcode;
         order.trackingInfo = '';
-        order.barcode = order_details.barcode.toString();
+
 
         // Update ledger
         await ctx.stub.putState(orderId, order.toBuffer());
+
 
         // Define and set event
         const event_obj = order;
@@ -121,6 +123,7 @@ class SupplychainContract extends Contract {
 
         // Must return a serialized order to caller of smart contract
         return order.toBuffer();
+
     }
 
     /**

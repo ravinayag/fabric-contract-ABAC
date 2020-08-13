@@ -1,4 +1,12 @@
 <section id="customer">
     <h3>Customer Portal - {{currentUser.userid}}</h3>
-    <order-history></order-history>
+
+    <mat-tab-group>
+        <mat-tab label="Order Query">
+            <order-history></order-history>
+        </mat-tab>
+        <mat-tab label="Place Order">
+            <order-form></order-form>
+        </mat-tab>
+    </mat-tab-group>
 </section>

@@ -26,6 +26,10 @@ import { OrdersTableComponent } from './_partials/orders-table/orders-table.comp
 import { ToShipperDialog } from './_partials/orders-table/orders-table.component';
 import { DeleteOrderDialog } from './_partials/orders-table/orders-table.component';
 
+import { OrdersTableComponentship } from './_partials/orders-table-shipper/orders-table-shipper.component';
+import { ToShipperDialogship } from './_partials/orders-table-shipper/orders-table-shipper.component';
+import { DeleteOrderDialogship } from './_partials/orders-table-shipper/orders-table-shipper.component';
+
 /* Services */
 import { ApiService, AuthService, UserService } from './_services/index';
 import { AuthGuard } from './_guards/auth.guard';
@@ -47,7 +51,10 @@ import { AuthGuard } from './_guards/auth.guard';
     OrderHistoryComponent,
     OrdersTableComponent,
     ToShipperDialog,
-    DeleteOrderDialog
+    DeleteOrderDialog,
+    OrdersTableComponentship,
+    ToShipperDialogship,
+    DeleteOrderDialogship
   ],
   imports: [
     BrowserModule,
